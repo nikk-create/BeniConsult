@@ -22,16 +22,14 @@ export default function AdminLayout() {
       <aside className="hidden md:flex flex-col w-56 bg-white border-r border-border shrink-0">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-5 rounded overflow-hidden">
-              <div className="w-1/3 bg-primary" />
-              <div className="flex-1 flex flex-col">
-                <div className="flex-1 bg-secondary" />
-                <div className="flex-1 bg-accent" />
-              </div>
+            <img src="/logo.png" alt="BéniConsult" className="w-9 h-9 object-contain" />
+            <div>
+              <span className="font-heading font-bold text-base text-gray-900">
+                Beni<span className="text-primary">consult</span>
+              </span>
+              <p className="text-xs text-accent font-medium">Administration</p>
             </div>
-            <span className="font-heading font-bold text-base">BéniConsult</span>
           </div>
-          <span className="text-xs text-accent font-medium mt-1 block">Administration</span>
         </div>
 
         <nav className="flex-1 p-3 space-y-1">
@@ -55,11 +53,15 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Contenu */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header mobile */}
         <header className="md:hidden sticky top-0 z-40 bg-white border-b border-border px-4 h-14 flex items-center justify-between">
-          <span className="font-heading font-bold text-base">Admin BéniConsult</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="BéniConsult" className="w-8 h-8 object-contain" />
+            <span className="font-heading font-bold text-base">
+              Beni<span className="text-primary">consult</span>
+            </span>
+          </div>
           <button onClick={handleLogout} className="text-gray-500">
             <LogOut className="w-5 h-5" />
           </button>
@@ -86,3 +88,4 @@ export default function AdminLayout() {
     </div>
   )
 }
+

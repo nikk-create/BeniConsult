@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { LayoutDashboard, CalendarDays, MessageCircle, UserCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import NotificationBell from './NotificationBell'
+import RDVNotification from './RDVNotification'
 
 const NAV = [
   { to: '/medecin/dashboard', Icon: LayoutDashboard, label: 'Tableau' },
@@ -17,21 +18,22 @@ export default function DoctorLayout() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-background">
-      <header className="sticky top-0 z-40 bg-secondary/10 backdrop-blur border-b border-secondary/30 px-4 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white border-b border-secondary/30 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-4 rounded overflow-hidden">
-            <div className="w-1/3 bg-primary" />
-            <div className="flex-1 flex flex-col">
-              <div className="flex-1 bg-secondary" />
-              <div className="flex-1 bg-accent" />
-            </div>
+          <img src="/logo.png" alt="BéniConsult" className="w-8 h-8 object-contain" />
+          <div>
+            <span className="font-heading font-bold text-base text-gray-900">
+              Beni<span className="text-primary">consult</span>
+            </span>
+            <span className="ml-2 text-xs bg-secondary/30 text-secondary-dark px-2 py-0.5 rounded-full font-medium">
+              Médecin
+            </span>
           </div>
-          <span className="font-heading font-bold text-base">BéniConsult</span>
-          <span className="text-xs bg-secondary/30 text-secondary-dark px-2 py-0.5 rounded-full font-medium">Médecin</span>
         </div>
         <NotificationBell userId={user?.id} />
       </header>
 
+      <RDVNotification />
       <main className="flex-1 overflow-y-auto pb-24">
         <Outlet />
       </main>
@@ -49,7 +51,9 @@ export default function DoctorLayout() {
                     transition={{ type:'spring', bounce:0.2, duration:0.5 }} />
                 )}
                 <Icon className={`w-5 h-5 relative z-10 transition-colors ${active ? 'text-secondary-dark' : 'text-gray-400'}`} />
-                <span className={`text-[10px] font-medium relative z-10 ${active ? 'text-secondary-dark' : 'text-gray-400'}`}>{label}</span>
+                <span className={`text-[10px] font-medium relative z-10 ${active ? 'text-secondary-dark' : 'text-gray-400'}`}>
+                  {label}
+                </span>
               </NavLink>
             )
           })}

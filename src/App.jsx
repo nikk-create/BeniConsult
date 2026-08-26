@@ -6,8 +6,11 @@ import Layout from '@/components/Layout'
 import DoctorLayout from '@/components/DoctorLayout'
 import AdminLayout from '@/components/AdminLayout'
 
-// Auth
+// Pages publiques
+import Landing from '@/pages/Landing'
 import Login from '@/pages/Login'
+import CGU from '@/pages/CGU'
+import Confidentialite from '@/pages/Confidentialite'
 
 // Pages patient
 import Home from '@/pages/Home'
@@ -30,7 +33,6 @@ import DoctorMessages from '@/pages/doctor/DoctorMessages'
 import DoctorProfil from '@/pages/doctor/DoctorProfil'
 import WritePrescription from '@/pages/doctor/WritePrescription'
 import PatientRecord from '@/pages/doctor/PatientRecord'
-import DoctorPending from '@/pages/doctor/DoctorPending'
 
 // Pages admin
 import AdminDashboard from '@/pages/admin/AdminDashboard'
@@ -39,7 +41,6 @@ import AdminAppointments from '@/pages/admin/AdminAppointments'
 import AdminPatients from '@/pages/admin/AdminPatients'
 import AdminPayments from '@/pages/admin/AdminPayments'
 
-// Spinner de chargement global
 function Spinner() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -51,7 +52,6 @@ function Spinner() {
   )
 }
 
-// Redirige vers le bon dashboard selon le rôle
 function RoleRedirect() {
   const { role, loading } = useAuth()
   if (loading) return <Spinner />
@@ -61,14 +61,12 @@ function RoleRedirect() {
   return <Navigate to="/accueil" replace />
 }
 
-// Protège les routes — redirige si non connecté ou mauvais rôle
 function ProtectedRoute({ children, allowedRoles }) {
-  const { role, loading, profile } = useAuth()
+  const { role, loading, profile, signOut } = useAuth()
   if (loading) return <Spinner />
   if (!role) return <Navigate to="/connexion" replace />
   if (allowedRoles && !allowedRoles.includes(role)) return <Navigate to="/" replace />
 
-  // Médecin non encore approuvé
   if (role === 'doctor' && profile?.doctor_status === 'en_attente') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background p-6">
@@ -79,10 +77,10 @@ function ProtectedRoute({ children, allowedRoles }) {
           <h2 className="font-heading font-bold text-xl mb-2">Compte en attente</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Votre dossier est en cours de vérification par l'équipe BéniConsult.
-            Vous recevrez un email dès validation.
+            Vous recevrez une notification dès validation.
           </p>
           <button
-            onClick={() => { import('@/api/supabase').then(m => m.supabase.auth.signOut()) ; window.location.href = '/connexion' }}
+            onClick={() => { signOut(); window.location.href = '/connexion' }}
             className="w-full py-2.5 rounded-xl bg-muted text-sm font-medium text-muted-foreground hover:bg-border transition-colors"
           >
             Se déconnecter
@@ -115,13 +113,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Index → redirige selon rôle */}
-        <Route path="/" element={<RoleRedirect />} />
-
-        {/* Auth */}
+        {/* Pages publiques */}
+        <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Login />} />
+        <Route path="/cgu" element={<CGU />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
 
-        {/* ── PATIENT (Layout avec nav mobile) */}
+        {/* Redirection selon rôle */}
+        <Route path="/app" element={<RoleRedirect />} />
+
+        {/* ── PATIENT */}
         <Route element={<ProtectedRoute allowedRoles={['patient']}><Layout /></ProtectedRoute>}>
           <Route path="/accueil" element={<Home />} />
           <Route path="/medecins" element={<Doctors />} />
@@ -134,12 +135,12 @@ export default function App() {
           <Route path="/dossier-medical" element={<DossierMedical />} />
         </Route>
 
-        {/* Pages sans layout (plein écran) */}
+        {/* Pages sans layout */}
         <Route path="/chat/:appointmentId" element={<ProtectedRoute allowedRoles={['patient','doctor']}><Chat /></ProtectedRoute>} />
         <Route path="/video/:appointmentId" element={<ProtectedRoute allowedRoles={['patient','doctor']}><VideoCall /></ProtectedRoute>} />
         <Route path="/ordonnance/:prescriptionId" element={<ProtectedRoute allowedRoles={['patient','doctor']}><PrescriptionView /></ProtectedRoute>} />
 
-        {/* ── MÉDECIN (DoctorLayout) */}
+        {/* ── MÉDECIN */}
         <Route element={<ProtectedRoute allowedRoles={['doctor']}><DoctorLayout /></ProtectedRoute>}>
           <Route path="/medecin/dashboard" element={<DoctorHome />} />
           <Route path="/medecin/agenda" element={<DoctorAgenda />} />
@@ -147,11 +148,10 @@ export default function App() {
           <Route path="/medecin/profil" element={<DoctorProfil />} />
         </Route>
 
-        {/* Pages médecin sans layout */}
         <Route path="/medecin/ordonnance/:appointmentId" element={<ProtectedRoute allowedRoles={['doctor']}><WritePrescription /></ProtectedRoute>} />
         <Route path="/medecin/dossier/:patientId" element={<ProtectedRoute allowedRoles={['doctor']}><PatientRecord /></ProtectedRoute>} />
 
-        {/* ── ADMIN (AdminLayout) */}
+        {/* ── ADMIN */}
         <Route element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/medecins" element={<AdminDoctors />} />

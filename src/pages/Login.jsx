@@ -55,9 +55,23 @@ function PatientForm() {
 
   const handleLogin = async () => {
     setLoading(true); setMsg('')
-    const { error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password
+    })
     if (error) { setMsg(error.message); setLoading(false); return }
-    navigate('/accueil')
+
+    // Récupère le profil directement après login
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    setLoading(false)
+    if (profile?.role === 'admin') navigate('/admin/dashboard')
+    else if (profile?.role === 'doctor') navigate('/medecin/dashboard')
+    else navigate('/accueil')
   }
 
   const handleRegister = async () => {
@@ -130,12 +144,24 @@ function DoctorForm() {
 
   const handleLogin = async () => {
     setLoading(true); setMsg('')
-    const { data, error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password
+    })
     if (error) { setMsg(error.message); setLoading(false); return }
 
-    // Vérifie que c'est bien un médecin
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single()
-    if (profile?.role !== 'doctor') { setMsg("Ce compte n'est pas un compte médecin."); supabase.auth.signOut(); setLoading(false); return }
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, doctor_status')
+      .eq('id', data.user.id)
+      .single()
+
+    setLoading(false)
+    if (profile?.role !== 'doctor') {
+      setMsg("Ce compte n'est pas un compte médecin.")
+      supabase.auth.signOut()
+      return
+    }
     navigate('/medecin/dashboard')
   }
 
@@ -285,10 +311,24 @@ function AdminForm() {
 
   const handleLogin = async () => {
     setLoading(true); setMsg('')
-    const { data, error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password
+    })
     if (error) { setMsg(error.message); setLoading(false); return }
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single()
-    if (profile?.role !== 'admin') { setMsg("Accès réservé aux administrateurs."); supabase.auth.signOut(); setLoading(false); return }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    setLoading(false)
+    if (profile?.role !== 'admin') {
+      setMsg("Accès réservé aux administrateurs.")
+      supabase.auth.signOut()
+      return
+    }
     navigate('/admin/dashboard')
   }
 
