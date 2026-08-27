@@ -11,6 +11,7 @@ import Landing from '@/pages/Landing'
 import Login from '@/pages/Login'
 import CGU from '@/pages/CGU'
 import Confidentialite from '@/pages/Confidentialite'
+import NotFound from '@/pages/NotFound'
 
 // Pages patient
 import Home from '@/pages/Home'
@@ -111,7 +112,7 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         {/* Pages publiques */}
         <Route path="/" element={<Landing />} />
@@ -161,7 +162,7 @@ export default function App() {
         </Route>
 
         {/* 404 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )

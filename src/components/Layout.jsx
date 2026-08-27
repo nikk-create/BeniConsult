@@ -2,20 +2,25 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Home, Users, CalendarDays, MessageCircle, UserCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { useLang } from '@/hooks/useLang'
 import NotificationBell from './NotificationBell'
 import RDVNotification from './RDVNotification'
+import LangSwitcher from './LangSwitcher'
 
-const NAV = [
-  { to: '/accueil',      Icon: Home,          label: 'Accueil'  },
-  { to: '/medecins',     Icon: Users,          label: 'Médecins' },
-  { to: '/rendez-vous',  Icon: CalendarDays,   label: 'RDV'      },
-  { to: '/messages',     Icon: MessageCircle,  label: 'Chat'     },
-  { to: '/profil',       Icon: UserCircle,     label: 'Profil'   },
-]
+const NAV_KEYS = ['home', 'doctors', 'appointments', 'chat', 'profile']
+const NAV_ICONS = [Home, Users, CalendarDays, MessageCircle, UserCircle]
+const NAV_PATHS = ['/accueil', '/medecins', '/rendez-vous', '/messages', '/profil']
 
 export default function Layout() {
   const { user } = useAuth()
+  const { t } = useLang()
   const location = useLocation()
+
+  const NAV = NAV_KEYS.map((key, i) => ({
+    to: NAV_PATHS[i],
+    Icon: NAV_ICONS[i],
+    label: t(key),
+  }))
 
   return (
     <div className="flex flex-col min-h-dvh bg-background">
@@ -26,10 +31,14 @@ export default function Layout() {
             Beni<span className="text-primary">consult</span>
           </span>
         </div>
-        <NotificationBell userId={user?.id} />
+        <div className="flex items-center gap-2">
+          <LangSwitcher />
+          <NotificationBell userId={user?.id} />
+        </div>
       </header>
 
       <RDVNotification />
+
       <main className="flex-1 overflow-y-auto pb-24">
         <Outlet />
       </main>
@@ -40,12 +49,12 @@ export default function Layout() {
             const active = location.pathname === to
             return (
               <NavLink key={to} to={to}
-                onClick={() => { if (active) window.scrollTo({ top:0, behavior:'smooth' }) }}
+                onClick={() => { if (active) window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                 className="flex flex-col items-center gap-0.5 px-3 py-1.5 relative">
                 {active && (
                   <motion.div layoutId="nav-pill"
                     className="absolute inset-0 bg-primary/8 rounded-xl"
-                    transition={{ type:'spring', bounce:0.2, duration:0.5 }} />
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }} />
                 )}
                 <Icon className={`w-5 h-5 relative z-10 transition-colors ${active ? 'text-primary' : 'text-gray-400'}`} />
                 <span className={`text-[10px] font-medium relative z-10 transition-colors ${active ? 'text-primary' : 'text-gray-400'}`}>

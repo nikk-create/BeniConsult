@@ -1,0 +1,40 @@
+{
+  "name": "BéniConsult",
+  "short_name": "BéniConsult",
+  "description": "Téléconsultation médicale au Bénin",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f8f5",
+  "theme_color": "#008751",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical"],
+  "lang": "fr",
+  "dir": "ltr",
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Consulter un médecin",
+      "url": "/medecins",
+      "description": "Voir les médecins disponibles"
+    },
+    {
+      "name": "Mes rendez-vous",
+      "url": "/rendez-vous",
+      "description": "Voir mes consultations"
+    }
+  ]
+}
